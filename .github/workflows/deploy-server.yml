@@ -1,0 +1,20 @@
+name: Deploy To Server
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - dev
+      - feat/**
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Run docker compose development
+        run: docker-compose -f docker-compose.yml up -d 
