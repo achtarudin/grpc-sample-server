@@ -38,7 +38,9 @@ services:
       - "traefik.http.routers.grpc-sample-server-app.tls=true"
       - "traefik.http.routers.grpc-sample-server-app.tls.certresolver=myresolver"
 
-
+    networks:
+      - traefik-network
+      
 networks:
   traefik-network:
     external: true
