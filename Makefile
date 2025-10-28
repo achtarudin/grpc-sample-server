@@ -19,3 +19,7 @@ execute: build
 .PHONY: dev-server
 dev-server:
 	gow run ./cmd/server
+
+.PHONY: dev-cli
+dev-cli:
+	gow run ./cmd/cli
