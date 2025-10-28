@@ -1,0 +1,11 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/go.prod.Dockerfile
+    container_name: grpc-sample-server-prod
+    ports:
+      - "8000:8000"
+    environment:
+      - GRPC_PORT=8000

@@ -1,5 +1,9 @@
 BIN_FILENAME=grpc-sample-server
 
+.PHONY: install-tools
+install-tools:
+	go install github.com/mitranim/gow@latest
+
 .PHONY: install-deps
 install-deps:
 	go mod tidy
