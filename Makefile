@@ -24,3 +24,8 @@ prod-server: build-server
 .PHONY: dev-server
 dev-server:
 	gow run ./cmd/server
+
+.PHONY: cli-server
+cli-server:
+	gow run ./cmd/cli
+

@@ -34,8 +34,6 @@ func (adapter *grpcAdapter) Start(ctx context.Context) error {
 		return err
 	}
 
-	_ = listen
-
 	adapter.server = grpc.NewServer()
 	hellov1.RegisterHelloServiceServer(adapter.server, adapter)
 	reflection.Register(adapter.server)

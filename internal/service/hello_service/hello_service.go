@@ -1,6 +1,7 @@
 package hello_service
 
 import (
+	"context"
 	helloPort "grpc-sample-server/internal/port/hello_service_port"
 	"math/rand"
 )
@@ -24,4 +25,14 @@ func (s *helloService) SayHello(name string) string {
 	helloRand := hello[rand.Intn(len(hello))]
 	helloMessage := helloRand + ", " + name + "!"
 	return helloMessage
+}
+
+func (s *helloService) SayHelloWithContext(ctx context.Context, name string) (string, error) {
+
+	select {
+	case <-ctx.Done():
+		return "", ctx.Err()
+	default:
+	}
+	return s.SayHello(name), nil
 }
