@@ -82,3 +82,6 @@ jobs:
 
       - name: List Docker images
         run: docker image ls
+      
+      - name: Check running containers
+        run: docker ps -a
