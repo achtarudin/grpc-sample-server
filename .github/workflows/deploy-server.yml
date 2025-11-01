@@ -11,6 +11,7 @@ env:
   IMAGE_NAME: "grpc-sample-server-prod"
   IMAGE_VERSION: "latest"
   IMAGE_NAME_TAR: "grpc-sample-server-prod.tar"
+  PATH_PROJECT: "/home/cutbray/grpc-sample-server"
 
 jobs:
   test:
@@ -57,17 +58,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.IMAGE_NAME }}
-          path: /home/cutbray/grpc-sample-server
+          path: ${{ env.PATH_PROJECT }}
 
       - name: Load Docker Image
-        run: docker load -i ${{ env.IMAGE_NAME_TAR }}
+        run: |
+          cd ${{ env.PATH_PROJECT }}
+          docker load -i ${{ env.IMAGE_NAME_TAR }}
 
       - name: List Docker images
         run: docker image ls
 
       - name: Run Production App with Docker Compose
         run: |
-          echo $(pwd)
+          cd ${{ env.PATH_PROJECT }} && echo $(pwd)
           IMAGE_NAME="${{ env.IMAGE_NAME }}" IMAGE_VERSION="${{ env.IMAGE_VERSION }}" docker compose -f docker-compose.prod.yml up -d grpc-sample-server-prod
 
       - name: Cleanup unused Docker images
@@ -76,11 +79,10 @@ jobs:
       - name: List Docker images
         run: docker image ls
 
-      - name: Remove tar file
-        run: rm ${{ env.IMAGE_NAME_TAR }}
-
-      - name: List files in workspace
-        run: ls -la
+      - name: Remove tar file and List files in workspace
+        run: |
+          cd ${{ env.PATH_PROJECT }}
+          rm ${{ env.IMAGE_NAME_TAR }} && ls -la
 
       - name: Check running containers
-        run: docker ps -a
+        run:  docker ps -a
