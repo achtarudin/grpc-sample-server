@@ -4,6 +4,7 @@ services:
     build:
       context: .
       dockerfile: docker/go.prod.Dockerfile
+    image: grpc-sample-server:latest
     container_name: grpc-sample-server-prod
     ports:
       - "8000:8000"
@@ -20,26 +21,26 @@ services:
       - "traefik.http.routers.grpc-sample-server-prod.tls=true"
       - "traefik.http.routers.grpc-sample-server-prod.tls.certresolver=myresolver"
 
-  grpc-sample-server-app:
-    image: grpc-sample-server:latest
-    container_name: grpc-sample-server-app
-    ports:
-      - "8000:8000"
-    environment:
-      - GRPC_PORT=8000
+  # grpc-sample-server-app:
+  #   image: grpc-sample-server:latest
+  #   container_name: grpc-sample-server-app
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - GRPC_PORT=8000
 
-    labels:
-      - "traefik.enable=true"
+  #   labels:
+  #     - "traefik.enable=true"
 
-      - "traefik.http.routers.grpc-sample-server-app.rule=Host(`grpc-server.cutbray.tech`)"
-      - "traefik.http.routers.grpc-sample-server-app.entrypoints=websecure"
-      - "traefik.http.services.grpc-sample-server-app.loadbalancer.server.port=8000"
+  #     - "traefik.http.routers.grpc-sample-server-app.rule=Host(`grpc-server.cutbray.tech`)"
+  #     - "traefik.http.routers.grpc-sample-server-app.entrypoints=websecure"
+  #     - "traefik.http.services.grpc-sample-server-app.loadbalancer.server.port=8000"
 
-      - "traefik.http.routers.grpc-sample-server-app.tls=true"
-      - "traefik.http.routers.grpc-sample-server-app.tls.certresolver=myresolver"
+  #     - "traefik.http.routers.grpc-sample-server-app.tls=true"
+  #     - "traefik.http.routers.grpc-sample-server-app.tls.certresolver=myresolver"
 
-    networks:
-      - traefik-network
+  #   networks:
+  #     - traefik-network
 
 networks:
   traefik-network:

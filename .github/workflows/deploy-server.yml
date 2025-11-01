@@ -29,7 +29,7 @@ jobs:
 
       - name: "Build Docker Image"
         run: |
-          docker build -t grpc-sample-server:latest -f docker/go.prod.Dockerfile .
+          docker compose -f docker-compose.prod.yml build grpc-sample-server-prod
           docker save grpc-sample-server:latest -o grpc-sample-server.tar
 
       - name: Upload artifact
@@ -60,12 +60,12 @@ jobs:
 
       - name: Remove old container if exists
         run: |
-          docker rm -f grpc-sample-server-app || true
+          docker rm -f grpc-sample-server-prod || true
 
       - name: Run Production App with Docker Compose
         run: |
           echo $(pwd)
-          docker compose -f docker-compose.prod.yml up -d grpc-sample-server-app
+          docker compose -f docker-compose.prod.yml up -d grpc-sample-server-prod
 
       - name: Cleanup unused Docker images
         run: docker image prune -af

@@ -7,23 +7,20 @@ install-tools:
 .PHONY: install-deps
 install-deps:
 	go mod tidy
+	go mod download
 
-.PHONY: clean-bin
-clean-bin:
+.PHONY: clean-server-bin
+clean-server-bin:
 	rm -rf ./bin
 
-.PHONY: build
-build: clean-bin install-deps
+.PHONY: build-server
+build-server: clean-server-bin install-deps
 	go build -o ./bin/$(BIN_FILENAME) ./cmd/server
 
-.PHONY: execute
-execute: build
+.PHONY: prod-server
+prod-server: build-server
 	./bin/$(BIN_FILENAME)
 
 .PHONY: dev-server
 dev-server:
 	gow run ./cmd/server
-
-.PHONY: dev-cli
-dev-cli:
-	gow run ./cmd/cli

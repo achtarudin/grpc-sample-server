@@ -7,9 +7,17 @@ services:
     container_name: grpc-sample-server-dev
 
     working_dir: /app
+
     volumes:
       - .:/app
+      - go-mod-cache:/go/pkg/mod
+
     ports:
       - "7000:7000"
+
     environment:
       - GRPC_PORT=7000
+      - GOMODCACHE=/go/pkg/mod
+
+volumes:
+  go-mod-cache:
