@@ -8,8 +8,8 @@ on:
       - dev
       - feat/**
 env:
-  IMAGE_NAME: "grpc-sample-server"
-  IMAGE_VERSION: "latest"
+  IMAGE_NAME: "grpc-sample-server-cutbray"
+  IMAGE_VERSION: "cutbray-v1.0.0"
   IMAGE_NAME_TAR: "grpc-sample-server.tar"
 
 jobs:
@@ -69,7 +69,7 @@ jobs:
       - name: Run Production App with Docker Compose
         run: |
           echo $(pwd)
-          docker compose -f docker-compose.prod.yml up -d grpc-sample-server-prod
+          IMAGE_NAME="${{ env.IMAGE_NAME }}" IMAGE_VERSION="${{ env.IMAGE_VERSION }}" docker compose -f docker-compose.prod.yml up -d grpc-sample-server-prod
 
       - name: Cleanup unused Docker images
         run: docker image prune -af
