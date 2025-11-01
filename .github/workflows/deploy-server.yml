@@ -9,7 +9,7 @@ on:
       - feat/**
 env:
   IMAGE_NAME: grpc-sample-server
-  IMAGE_VERSION: latest
+  IMAGE_VERSION: "2"
   IMAGE_NAME_TAR: grpc-sample-server.tar
 
 jobs:
