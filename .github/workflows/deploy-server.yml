@@ -62,10 +62,6 @@ jobs:
       - name: List Docker images
         run: docker image ls
 
-      # - name: Remove old container if exists
-      #   run: |
-      #     docker rm -f grpc-sample-server-prod || true
-
       - name: Run Production App with Docker Compose
         run: |
           echo $(pwd)
