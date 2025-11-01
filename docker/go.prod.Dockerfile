@@ -9,7 +9,7 @@ RUN apk add --no-cache make
 
 COPY . .
 
-RUN make build
+RUN make build-server
 
 
 
