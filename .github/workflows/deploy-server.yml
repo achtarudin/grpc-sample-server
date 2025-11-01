@@ -8,9 +8,9 @@ on:
       - dev
       - feat/**
 env:
-  IMAGE_NAME: grpc-sample-server
-  IMAGE_VERSION: "2"
-  IMAGE_NAME_TAR: grpc-sample-server.tar
+  IMAGE_NAME: "grpc-sample-server"
+  IMAGE_VERSION: "latest"
+  IMAGE_NAME_TAR: "grpc-sample-server.tar"
 
 jobs:
   test:
