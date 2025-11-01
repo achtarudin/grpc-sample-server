@@ -34,7 +34,7 @@ func (adapter *grpcAdapter) SayManyHellos(req *hellov1.SayManyHellosRequest, str
 
 	ctx := stream.Context()
 
-	for i := range 100000 {
+	for i := range 1000 {
 		great, err := adapter.helloService.SayHelloWithContext(ctx, req.GetName())
 
 		if err != nil {
@@ -53,7 +53,7 @@ func (adapter *grpcAdapter) SayManyHellos(req *hellov1.SayManyHellosRequest, str
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
-		case <-time.After(1 * time.Millisecond):
+		case <-time.After(50 * time.Millisecond):
 		}
 	}
 
