@@ -53,7 +53,7 @@ func (adapter *grpcAdapter) SayManyHellos(req *hellov1.SayManyHellosRequest, str
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
-		case <-time.After(50 * time.Millisecond):
+		case <-time.After(200 * time.Millisecond):
 		}
 	}
 
