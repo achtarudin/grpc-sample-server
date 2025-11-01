@@ -3,12 +3,12 @@ package grpc_adapter
 import (
 	"context"
 	"fmt"
+	"io"
+	"strings"
 	"time"
 
 	hellov1 "github.com/achtarudin/grpc-sample/protogen/hello/v1"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -21,11 +21,10 @@ func (adapter *grpcAdapter) SayHello(ctx context.Context, req *hellov1.SayHelloR
 	}
 
 	result := adapter.helloService.SayHello(req.GetName())
-	now := timestamppb.Now()
 
 	response := &hellov1.SayHelloResponse{
 		Message:   result,
-		CreatedAt: now,
+		CreatedAt: timestamppb.Now(),
 	}
 
 	return response, nil
@@ -35,17 +34,16 @@ func (adapter *grpcAdapter) SayManyHellos(req *hellov1.SayManyHellosRequest, str
 
 	ctx := stream.Context()
 
-	for i := range 100 {
+	for i := range 10 {
 		great, err := adapter.helloService.SayHelloWithContext(ctx, req.GetName())
 
 		if err != nil {
 			return err
 		}
 
-		now := timestamppb.Now()
 		response := &hellov1.SayManyHellosResponse{
 			Message:   fmt.Sprintf("%s - %d", great, i+1),
-			CreatedAt: now,
+			CreatedAt: timestamppb.Now(),
 		}
 
 		if err := stream.Send(response); err != nil {
@@ -59,14 +57,66 @@ func (adapter *grpcAdapter) SayManyHellos(req *hellov1.SayManyHellosRequest, str
 		}
 	}
 
-	// Selesai dengan sukses
 	return nil
 }
 
-func (adapter *grpcAdapter) SayHelloToEveryone(grpc.ClientStreamingServer[hellov1.SayHelloToEveryoneRequest, hellov1.SayHelloToEveryoneResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method SayHelloToEveryone not implemented")
+func (adapter *grpcAdapter) SayHelloToEveryone(stream grpc.ClientStreamingServer[hellov1.SayHelloToEveryoneRequest, hellov1.SayHelloToEveryoneResponse]) error {
+	var resBuilder strings.Builder
+	ctx := stream.Context()
+	for {
+
+		req, err := stream.Recv()
+
+		if err == io.EOF {
+			return stream.SendAndClose(&hellov1.SayHelloToEveryoneResponse{
+				Message:   resBuilder.String(),
+				CreatedAt: timestamppb.Now(),
+			})
+		}
+
+		if err != nil {
+			return err
+		}
+
+		great, err := adapter.helloService.SayHelloWithContext(ctx, req.GetName())
+
+		if err != nil {
+			return err
+		}
+
+		resBuilder.WriteString(great)
+		resBuilder.WriteString(" ")
+
+	}
+
 }
 
-func (adapter *grpcAdapter) SayHelloContinuous(grpc.BidiStreamingServer[hellov1.SayHelloContinuousRequest, hellov1.SayHelloContinuousResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method SayHelloContinuous not implemented")
+func (adapter *grpcAdapter) SayHelloContinuous(stream grpc.BidiStreamingServer[hellov1.SayHelloContinuousRequest, hellov1.SayHelloContinuousResponse]) error {
+	ctx := stream.Context()
+	for {
+		req, err := stream.Recv()
+
+		if err == io.EOF {
+			return nil
+		}
+
+		if err != nil {
+			return err
+		}
+
+		great, err := adapter.helloService.SayHelloWithContext(ctx, req.GetName())
+
+		if err != nil {
+			return err
+		}
+
+		err = stream.Send(&hellov1.SayHelloContinuousResponse{
+			Message:   great,
+			CreatedAt: timestamppb.Now(),
+		})
+
+		if err != nil {
+			return err
+		}
+	}
 }

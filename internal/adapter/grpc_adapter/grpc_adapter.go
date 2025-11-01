@@ -5,7 +5,7 @@ import (
 	"fmt"
 	grpcPort "grpc-sample-server/internal/port/grpc_adapter_port"
 	helloPort "grpc-sample-server/internal/port/hello_service_port"
-	"log"
+	"grpc-sample-server/internal/utils/console"
 	"net"
 
 	hellov1 "github.com/achtarudin/grpc-sample/protogen/hello/v1"
@@ -61,17 +61,17 @@ func (adapter *grpcAdapter) Stop(ctx context.Context) {
 	doneChan := make(chan struct{})
 
 	go func() {
-		log.Println("Gracefully shutting down gRPC server...")
+		console.Log("Gracefully shutting down gRPC server...")
 		adapter.server.GracefulStop()
 		close(doneChan)
 	}()
 
 	select {
 	case <-doneChan:
-		log.Println("gRPC server stopped gracefully.")
+		console.Log("gRPC server stopped gracefully.")
 	case <-ctx.Done():
 		// Context timeout, paksa berhenti
-		log.Println("Shutdown deadline exceeded, forcing gRPC server stop...")
+		console.Log("Shutdown deadline exceeded, forcing gRPC server stop...")
 		adapter.server.Stop()
 	}
 }

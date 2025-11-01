@@ -4,6 +4,7 @@ import (
 	"context"
 	"grpc-sample-server/internal/adapter/grpc_adapter"
 	"grpc-sample-server/internal/service/hello_service"
+	"grpc-sample-server/internal/utils/console"
 	"log"
 	"os"
 	"os/signal"
@@ -32,7 +33,7 @@ func main() {
 	defer stop()
 
 	go func() {
-		log.Printf("Starting gRPC server on port %d...\n", grpcPort)
+		console.Log("Starting gRPC server on port %d...", grpcPort)
 		err := grpcAdapter.Start(shutdown)
 		if err != nil {
 			stop()

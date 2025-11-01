@@ -34,5 +34,8 @@ func (s *helloService) SayHelloWithContext(ctx context.Context, name string) (st
 		return "", ctx.Err()
 	default:
 	}
+	if name == "error" {
+		return "", context.Canceled
+	}
 	return s.SayHello(name), nil
 }
