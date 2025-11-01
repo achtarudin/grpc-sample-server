@@ -8,9 +8,9 @@ on:
       - dev
       - feat/**
 env:
-  IMAGE_NAME: "grpc-sample-server-cutbray"
-  IMAGE_VERSION: "cutbray-v1.0.0"
-  IMAGE_NAME_TAR: "grpc-sample-server.tar"
+  IMAGE_NAME: "grpc-sample-server-prod"
+  IMAGE_VERSION: "latest"
+  IMAGE_NAME_TAR: "grpc-sample-server-prod.tar"
 
 jobs:
   test:
@@ -62,9 +62,9 @@ jobs:
       - name: List Docker images
         run: docker image ls
 
-      - name: Remove old container if exists
-        run: |
-          docker rm -f grpc-sample-server-prod || true
+      # - name: Remove old container if exists
+      #   run: |
+      #     docker rm -f grpc-sample-server-prod || true
 
       - name: Run Production App with Docker Compose
         run: |
@@ -74,14 +74,14 @@ jobs:
       - name: Cleanup unused Docker images
         run: docker image prune -af
       
+      - name: List Docker images
+        run: docker image ls
+
       - name: Remove tar file
         run: rm ${{ env.IMAGE_NAME_TAR }}
 
       - name: List files in workspace
         run: ls -la
 
-      - name: List Docker images
-        run: docker image ls
-      
       - name: Check running containers
         run: docker ps -a
