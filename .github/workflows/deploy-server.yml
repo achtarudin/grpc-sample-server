@@ -7,6 +7,10 @@ on:
       - main
       - dev
       - feat/**
+env:
+  IMAGE_NAME: grpc-sample-server
+  IMAGE_VERSION: latest
+  IMAGE_NAME_TAR: grpc-sample-server.tar
 
 jobs:
   test:
@@ -29,14 +33,14 @@ jobs:
 
       - name: "Build Docker Image"
         run: |
-          docker compose -f docker-compose.prod.yml build grpc-sample-server-prod
-          docker save grpc-sample-server:latest -o grpc-sample-server.tar
+          IMAGE_NAME="${{ env.IMAGE_NAME }}" IMAGE_VERSION="${{ env.IMAGE_VERSION }}" docker compose -f docker-compose.prod.yml build grpc-sample-server-prod
+          docker save ${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }} -o ${{ env.IMAGE_NAME_TAR }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: grpc-sample-server
-          path: grpc-sample-server.tar
+          name: ${{ env.IMAGE_NAME }}
+          path: ${{ env.IMAGE_NAME_TAR }}
 
   deploy:
     if: github.ref == 'refs/heads/main'
@@ -50,10 +54,10 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: grpc-sample-server
+          name: ${{ env.IMAGE_NAME }}
 
       - name: Load Docker Image
-        run: docker load -i grpc-sample-server.tar
+        run: docker load -i ${{ env.IMAGE_NAME_TAR }}
 
       - name: List Docker images
         run: docker image ls
@@ -71,7 +75,7 @@ jobs:
         run: docker image prune -af
       
       - name: Remove tar file
-        run: rm grpc-sample-server.tar
+        run: rm ${{ env.IMAGE_NAME_TAR }}
 
       - name: List files in workspace
         run: ls -la
