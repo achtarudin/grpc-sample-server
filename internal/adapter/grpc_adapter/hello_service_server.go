@@ -33,8 +33,8 @@ func (adapter *grpcAdapter) SayHello(ctx context.Context, req *hellov1.SayHelloR
 func (adapter *grpcAdapter) SayManyHellos(req *hellov1.SayManyHellosRequest, stream grpc.ServerStreamingServer[hellov1.SayManyHellosResponse]) error {
 
 	ctx := stream.Context()
-
-	for i := range 1000 {
+	total := 10
+	for i := range total {
 		great, err := adapter.helloService.SayHelloWithContext(ctx, req.GetName())
 
 		if err != nil {
@@ -52,8 +52,8 @@ func (adapter *grpcAdapter) SayManyHellos(req *hellov1.SayManyHellosRequest, str
 
 		select {
 		case <-ctx.Done():
-			return ctx.Err()
-		case <-time.After(200 * time.Millisecond):
+			return nil
+		case <-time.After(500 * time.Millisecond):
 		}
 	}
 
