@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+
+	"buf.build/go/protovalidate"
 )
 
 const (
@@ -23,14 +25,24 @@ func main() {
 
 	grpcPort := getGrpcPort("GRPC_PORT", DEFAULT_GRPC_PORT)
 
+	// Validator Initialization
+	validator, err := protovalidate.New()
+	if err != nil {
+		log.Fatalf("Failed to create validator: %v", err)
+	}
 	// Service Initialization
 	helloService := hello_service.NewHelloService()
 
 	// Grpc Adapter Initialization
-	grpcAdapter := grpc_adapter.NewGrpcAdapter(grpcPort, helloService)
+	grpcAdapter := grpc_adapter.NewGrpcAdapter(grpcPort, validator, helloService)
 
 	shutdown, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
+
+	if err != nil {
+		stop()
+		log.Fatalf("Failed to create validator: %v", err)
+	}
 
 	go func() {
 		console.Log("Starting gRPC server on port %d...", grpcPort)

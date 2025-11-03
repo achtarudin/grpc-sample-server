@@ -8,22 +8,27 @@ import (
 	"grpc-sample-server/internal/utils/console"
 	"net"
 
+	"buf.build/go/protovalidate"
 	hellov1 "github.com/achtarudin/grpc-sample/protogen/hello/v1"
+	protovalidate_middleware "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/protovalidate"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
 type grpcAdapter struct {
 	hellov1.UnimplementedHelloServiceServer
-	helloService helloPort.HelloServicePort
+	server *grpc.Server
+
 	grpcPort     int
-	server       *grpc.Server
+	validator    protovalidate.Validator
+	helloService helloPort.HelloServicePort
 }
 
-func NewGrpcAdapter(grpcPort int, helloService helloPort.HelloServicePort) grpcPort.GrpcAdapterPort {
+func NewGrpcAdapter(grpcPort int, validator protovalidate.Validator, helloService helloPort.HelloServicePort) grpcPort.GrpcAdapterPort {
 	return &grpcAdapter{
 		grpcPort:     grpcPort,
 		helloService: helloService,
+		validator:    validator,
 	}
 }
 
@@ -34,7 +39,11 @@ func (adapter *grpcAdapter) Start(ctx context.Context) error {
 		return err
 	}
 
-	adapter.server = grpc.NewServer()
+	adapter.server = grpc.NewServer(
+		grpc.ChainUnaryInterceptor(protovalidate_middleware.UnaryServerInterceptor(adapter.validator)),
+		grpc.ChainStreamInterceptor(protovalidate_middleware.StreamServerInterceptor(adapter.validator)),
+	)
+
 	hellov1.RegisterHelloServiceServer(adapter.server, adapter)
 	reflection.Register(adapter.server)
 
