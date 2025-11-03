@@ -8,6 +8,9 @@ services:
 
     working_dir: /app
 
+    networks:
+      - grpc-sample
+
     volumes:
       - .:/app
       - go-mod-cache:/go/pkg/mod
@@ -21,3 +24,6 @@ services:
 
 volumes:
   go-mod-cache:
+
+networks:
+  grpc-sample:
