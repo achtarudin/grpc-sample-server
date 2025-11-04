@@ -8,6 +8,7 @@ install-tools:
 install-deps:
 	go mod tidy
 	go mod download
+	go get -u github.com/achtarudin/grpc-sample
 
 .PHONY: clean-server-bin
 clean-server-bin:
