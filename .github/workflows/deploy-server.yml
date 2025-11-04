@@ -45,7 +45,7 @@ jobs:
         with:
           name: ${{ env.IMAGE_NAME }}
           path: |
-            docker-compose.prod.yml 
+            docker-compose.prod.yml
             ${{ env.IMAGE_NAME_TAR }}
 
   deploy:
@@ -78,7 +78,7 @@ jobs:
 
       - name: Cleanup unused Docker images
         run: docker image prune -af
-      
+
       - name: List Docker images
         run: docker image ls
 
@@ -88,4 +88,4 @@ jobs:
           rm ${{ env.IMAGE_NAME_TAR }} && ls -la
 
       - name: Check running containers
-        run:  docker ps -a
+        run: docker ps -a

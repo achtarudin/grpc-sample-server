@@ -3,6 +3,7 @@ package grpc_adapter
 import (
 	"context"
 	"fmt"
+	"grpc-sample-server/internal/adapter/grpc_adapter/interceptors"
 	grpcPort "grpc-sample-server/internal/port/grpc_adapter_port"
 	helloPort "grpc-sample-server/internal/port/hello_service_port"
 	"grpc-sample-server/internal/utils/console"
@@ -40,7 +41,11 @@ func (adapter *grpcAdapter) Start(ctx context.Context) error {
 	}
 
 	adapter.server = grpc.NewServer(
-		grpc.ChainUnaryInterceptor(protovalidate_middleware.UnaryServerInterceptor(adapter.validator)),
+		grpc.ChainUnaryInterceptor(
+			interceptors.LogUnaryInterceptor(),
+			// interceptors.ReadMetadataUnaryInterceptor(),
+			protovalidate_middleware.UnaryServerInterceptor(adapter.validator),
+		),
 		grpc.ChainStreamInterceptor(protovalidate_middleware.StreamServerInterceptor(adapter.validator)),
 	)
 

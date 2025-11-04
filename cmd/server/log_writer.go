@@ -10,11 +10,19 @@ import (
 type logWriter struct{}
 
 func (writer *logWriter) Write(result []byte) (n int, err error) {
+
+	color.NoColor = false
+
 	var c *color.Color
-	if bytes.Contains(bytes.ToLower(result), []byte("error")) || bytes.Contains(bytes.ToLower(result), []byte("failed")) {
-		c = color.New(color.FgRed)
+
+	byteLower := bytes.ToLower(result)
+
+	if bytes.Contains(byteLower, []byte("error")) || bytes.Contains(byteLower, []byte("failed")) {
+		c = color.New(color.FgHiRed)
+	} else if bytes.Contains(byteLower, []byte("info")) {
+		c = color.New(color.FgHiBlue)
 	} else {
-		c = color.New(color.FgGreen)
+		c = color.New(color.FgHiGreen)
 	}
 	return c.Print(time.Now().UTC().Format("02/01/2006 15:04:05") + " " + string(result))
 }
