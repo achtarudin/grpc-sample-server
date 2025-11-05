@@ -43,7 +43,6 @@ func (adapter *grpcAdapter) Start(ctx context.Context) error {
 	adapter.server = grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			interceptors.LogUnaryInterceptor(),
-			// interceptors.ReadMetadataUnaryInterceptor(),
 			protovalidate_middleware.UnaryServerInterceptor(adapter.validator),
 		),
 		grpc.ChainStreamInterceptor(protovalidate_middleware.StreamServerInterceptor(adapter.validator)),

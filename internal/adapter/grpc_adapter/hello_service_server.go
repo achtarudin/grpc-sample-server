@@ -12,6 +12,16 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+func readHeaderFromContext(ctx context.Context) {
+	// if md, ok := metadata.FromIncomingContext(ctx); ok {
+	// 	for key := range md {
+	// 		if len(md[key]) > 0 {
+	// 			log.Printf("Metadata Headers from client - %s: %v\n", key, md[key][0])
+	// 		}
+	// 	}
+	// }
+}
+
 func (adapter *grpcAdapter) SayHello(ctx context.Context, req *hellov1.SayHelloRequest) (*hellov1.SayHelloResponse, error) {
 
 	select {
@@ -20,6 +30,7 @@ func (adapter *grpcAdapter) SayHello(ctx context.Context, req *hellov1.SayHelloR
 	default:
 	}
 
+	readHeaderFromContext(ctx)
 	result := adapter.helloService.SayHello(req.GetName())
 
 	response := &hellov1.SayHelloResponse{
