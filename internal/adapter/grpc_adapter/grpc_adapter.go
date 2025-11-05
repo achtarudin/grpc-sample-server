@@ -42,10 +42,14 @@ func (adapter *grpcAdapter) Start(ctx context.Context) error {
 
 	adapter.server = grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			interceptors.LogUnaryInterceptor(),
+			// interceptors.LogUnaryInterceptor(),
+			interceptors.WriteMetadataUnaryInterceptor(),
+			interceptors.ReadMetadataUnaryInterceptor(),
 			protovalidate_middleware.UnaryServerInterceptor(adapter.validator),
 		),
-		grpc.ChainStreamInterceptor(protovalidate_middleware.StreamServerInterceptor(adapter.validator)),
+		grpc.ChainStreamInterceptor(
+			interceptors.LogStreamingInterceptor(),
+			protovalidate_middleware.StreamServerInterceptor(adapter.validator)),
 	)
 
 	hellov1.RegisterHelloServiceServer(adapter.server, adapter)

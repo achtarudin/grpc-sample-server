@@ -4,23 +4,15 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 	"time"
 
 	hellov1 "github.com/achtarudin/grpc-sample/protogen/hello/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
-
-func readHeaderFromContext(ctx context.Context) {
-	// if md, ok := metadata.FromIncomingContext(ctx); ok {
-	// 	for key := range md {
-	// 		if len(md[key]) > 0 {
-	// 			log.Printf("Metadata Headers from client - %s: %v\n", key, md[key][0])
-	// 		}
-	// 	}
-	// }
-}
 
 func (adapter *grpcAdapter) SayHello(ctx context.Context, req *hellov1.SayHelloRequest) (*hellov1.SayHelloResponse, error) {
 
@@ -30,13 +22,16 @@ func (adapter *grpcAdapter) SayHello(ctx context.Context, req *hellov1.SayHelloR
 	default:
 	}
 
-	readHeaderFromContext(ctx)
 	result := adapter.helloService.SayHello(req.GetName())
 
+	nowPb := timestamppb.Now()
 	response := &hellov1.SayHelloResponse{
 		Message:   result,
-		CreatedAt: timestamppb.Now(),
+		CreatedAt: nowPb,
 	}
+	header := metadata.Pairs("header-key", nowPb.AsTime().UTC().Format("02/01/2006 15:04:05"))
+
+	grpc.SetHeader(ctx, header)
 
 	return response, nil
 }
@@ -44,6 +39,9 @@ func (adapter *grpcAdapter) SayHello(ctx context.Context, req *hellov1.SayHelloR
 func (adapter *grpcAdapter) SayManyHellos(req *hellov1.SayManyHellosRequest, stream grpc.ServerStreamingServer[hellov1.SayManyHellosResponse]) error {
 
 	ctx := stream.Context()
+
+	readHeaderFromContext(ctx)
+
 	total := 10
 	for i := range total {
 		great, err := adapter.helloService.SayHelloWithContext(ctx, req.GetName())
@@ -73,7 +71,11 @@ func (adapter *grpcAdapter) SayManyHellos(req *hellov1.SayManyHellosRequest, str
 
 func (adapter *grpcAdapter) SayHelloToEveryone(stream grpc.ClientStreamingServer[hellov1.SayHelloToEveryoneRequest, hellov1.SayHelloToEveryoneResponse]) error {
 	var resBuilder strings.Builder
+
 	ctx := stream.Context()
+
+	readHeaderFromContext(ctx)
+
 	for {
 
 		req, err := stream.Recv()
@@ -128,6 +130,16 @@ func (adapter *grpcAdapter) SayHelloContinuous(stream grpc.BidiStreamingServer[h
 
 		if err != nil {
 			return err
+		}
+	}
+}
+
+func readHeaderFromContext(ctx context.Context) {
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		for key := range md {
+			if len(md[key]) > 0 {
+				log.Printf("Metadata Headers from client - %s: %v\n", key, md[key][0])
+			}
 		}
 	}
 }
