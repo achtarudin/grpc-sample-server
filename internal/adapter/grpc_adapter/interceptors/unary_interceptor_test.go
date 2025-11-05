@@ -50,7 +50,7 @@ func TestLogUnaryInterceptor(t *testing.T) {
 
 func TestWriteMetadataUnaryInterceptor(t *testing.T) {
 
-	md := metadata.New(nil)
+	md := metadata.Pairs("test", "value")
 
 	ctx := metadata.NewIncomingContext(context.Background(), md)
 
