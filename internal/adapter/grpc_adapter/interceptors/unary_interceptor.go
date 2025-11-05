@@ -3,7 +3,6 @@ package interceptors
 import (
 	"context"
 	"grpc-sample-server/internal/utils/console"
-	"log"
 
 	hellov1 "github.com/achtarudin/grpc-sample/protogen/hello/v1"
 	"google.golang.org/grpc"
@@ -49,7 +48,7 @@ func ReadMetadataUnaryInterceptor() grpc.UnaryServerInterceptor {
 		if md, ok := metadata.FromIncomingContext(ctx); ok {
 			for key := range md {
 				if len(md[key]) > 0 {
-					log.Printf("Read Metadata Headers - %s: %v\n", key, md[key][0])
+					console.Log("Read Metadata Headers - %s: %v", key, md[key][0])
 				}
 			}
 		}
