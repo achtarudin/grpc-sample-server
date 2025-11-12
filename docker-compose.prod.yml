@@ -11,15 +11,6 @@ services:
       - "8000:8000"
     environment:
       - GRPC_PORT=8000
-    labels:
-      - "traefik.enable=true"
-
-      - "traefik.http.routers.grpc-sample-server-prod.rule=Host(`grpc-server.cutbray.tech`)"
-      - "traefik.http.routers.grpc-sample-server-prod.entrypoints=websecure"
-      - "traefik.http.services.grpc-sample-server-prod.loadbalancer.server.port=8000"
-
-      - "traefik.http.routers.grpc-sample-server-prod.tls=true"
-      - "traefik.http.routers.grpc-sample-server-prod.tls.certresolver=myresolver"
 
 networks:
   traefik-network:

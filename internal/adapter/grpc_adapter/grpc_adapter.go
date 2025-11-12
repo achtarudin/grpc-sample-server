@@ -13,7 +13,6 @@ import (
 	hellov1 "github.com/achtarudin/grpc-sample/protogen/hello/v1"
 	protovalidate_middleware "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/protovalidate"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 type grpcAdapter struct {
@@ -53,7 +52,8 @@ func (adapter *grpcAdapter) Start(ctx context.Context) error {
 	)
 
 	hellov1.RegisterHelloServiceServer(adapter.server, adapter)
-	reflection.Register(adapter.server)
+
+	// reflection.Register(adapter.server)
 
 	serveErr := make(chan error, 1)
 
