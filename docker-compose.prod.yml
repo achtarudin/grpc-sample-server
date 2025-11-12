@@ -6,6 +6,7 @@ services:
       dockerfile: docker/go.prod.Dockerfile
     image: ${IMAGE_NAME:-grpc-sample-server}:${IMAGE_VERSION:-latest}
     container_name: grpc-sample-server-prod
+    restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
