@@ -2,7 +2,6 @@ package interceptors
 
 import (
 	"context"
-	"grpc-sample-server/internal/utils/console"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -45,9 +44,7 @@ func LogStreamingInterceptor() grpc.StreamServerInterceptor {
 			ctx:          ctx,
 		}
 
-		console.Log("Streaming Method: %v", info.FullMethod)
-
-		wrapped.SetHeader(metadata.Pairs("KOPI", "ROKOKs"))
+		wrapped.SetHeader(metadata.Pairs("streaming", "LogStreamingInterceptor"))
 
 		err := handler(srv, wrapped)
 		return err

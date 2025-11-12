@@ -1,4 +1,4 @@
-name: Deploy To Server
+name: Deploy Grpc Sample Server
 
 on:
   workflow_dispatch:
@@ -14,6 +14,7 @@ env:
   IMAGE_NAME: "grpc-sample-server-prod"
   IMAGE_VERSION: "latest"
   IMAGE_NAME_TAR: "grpc-sample-server-prod.tar"
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -31,6 +32,10 @@ jobs:
 
       - name: Create network traefik-network
         run: docker network create traefik-network || echo "Network traefik-network already exists"
+
+      - name: Create .env.prod file
+        run: |
+          echo "# the env configuration file for the project" >> .env.prod
 
       - name: "Build Docker Image"
         run: |
@@ -71,8 +76,6 @@ jobs:
       PATH_PROJECT: ${{ vars.PATH_PROJECT }}
 
     steps:
-      # - name: Checkout repository
-      #   uses: actions/checkout@v5
 
       - name: Download artifact
         uses: actions/download-artifact@v4

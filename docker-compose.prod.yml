@@ -5,12 +5,19 @@ services:
       context: .
       dockerfile: docker/go.prod.Dockerfile
     image: ${IMAGE_NAME:-grpc-sample-server}:${IMAGE_VERSION:-latest}
+
     container_name: grpc-sample-server-prod
+
     restart: unless-stopped
+
+    networks:
+      - traefik-network
+
+    volumes:
+      - .env.prod:/app/.env:ro
+
     ports:
-      - "8000:8000"
-    environment:
-      - GRPC_PORT=8000
+      - "8000:9000"
 
 networks:
   traefik-network:

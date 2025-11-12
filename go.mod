@@ -7,6 +7,7 @@ require (
 	github.com/achtarudin/grpc-sample v0.1.3
 	github.com/fatih/color v1.18.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.2
+	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/grpc v1.76.0
 	google.golang.org/protobuf v1.36.10

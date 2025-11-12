@@ -1,8 +1,11 @@
 package main
 
-import "log"
+import (
+	"grpc-sample-server/internal/adapter/logging"
+	"log"
+)
 
 func main() {
 	log.SetFlags(0)
-	log.SetOutput(&logWriter{})
+	log.SetOutput(&logging.Format{})
 }
