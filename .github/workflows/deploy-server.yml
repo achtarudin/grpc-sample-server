@@ -33,6 +33,10 @@ jobs:
       - name: Create network traefik-network
         run: docker network create traefik-network || echo "Network traefik-network already exists"
 
+      - name: Create .env.prod file
+        run: |
+          echo "# the env configuration file for the project" >> .env.prod
+
       - name: "Build Docker Image"
         run: |
           docker compose -f docker-compose.prod.yml up -d

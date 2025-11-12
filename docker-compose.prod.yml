@@ -13,8 +13,8 @@ services:
     networks:
       - traefik-network
 
-    # volumes:
-    #   - .env.prod:/app/.env:ro
+    volumes:
+      - .env.prod:/app/.env:ro
 
     ports:
       - "8000:9000"
