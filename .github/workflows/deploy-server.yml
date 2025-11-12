@@ -11,7 +11,7 @@ env:
   IMAGE_NAME: "grpc-sample-server-prod"
   IMAGE_VERSION: "latest"
   IMAGE_NAME_TAR: "grpc-sample-server-prod.tar"
-  PATH_PROJECT: "/home/cutbray/grpc-sample-server"
+  PATH_PROJECT: ${{ secrets.PATH_PROJECT }}
 
 jobs:
   test:
@@ -51,7 +51,7 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main'
     needs: build
-    runs-on: [self-hosted, Linux, grpc-sample-server]
+    runs-on: [grpc-sample-server]
 
     steps:
       # - name: Checkout repository
