@@ -11,8 +11,6 @@ env:
   IMAGE_NAME: "grpc-sample-server-prod"
   IMAGE_VERSION: "latest"
   IMAGE_NAME_TAR: "grpc-sample-server-prod.tar"
-  PATH_PROJECT: ${{ secrets.PATH_PROJECT }}
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -52,6 +50,11 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: [grpc-sample-server]
+
+    environment: prod
+
+    env:
+      PATH_PROJECT: ${{ vars.PATH_PROJECT }}
 
     steps:
       # - name: Checkout repository
