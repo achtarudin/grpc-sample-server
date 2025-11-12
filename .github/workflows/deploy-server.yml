@@ -1,4 +1,4 @@
-name: Deploy To Server
+name: Deploy Grpc Sample Server
 
 on:
   workflow_dispatch:
@@ -72,8 +72,6 @@ jobs:
       PATH_PROJECT: ${{ vars.PATH_PROJECT }}
 
     steps:
-      # - name: Checkout repository
-      #   uses: actions/checkout@v5
 
       - name: Download artifact
         uses: actions/download-artifact@v4

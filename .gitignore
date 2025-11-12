@@ -1,1 +1,8 @@
 bin/
+
+.DS_Store
+
+.env
+.env.prod
+.env.dev
+.env.test

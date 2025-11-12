@@ -3,16 +3,17 @@ package main
 import (
 	"context"
 	"grpc-sample-server/internal/adapter/grpc_adapter"
+	"grpc-sample-server/internal/adapter/logging"
 	"grpc-sample-server/internal/service/hello_service"
 	"grpc-sample-server/internal/utils/console"
+	"grpc-sample-server/internal/utils/helper"
 	"log"
-	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 
 	"buf.build/go/protovalidate"
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -21,48 +22,49 @@ const (
 
 func main() {
 	log.SetFlags(0)
-	log.SetOutput(&logWriter{})
+	log.SetOutput(&logging.Format{})
 
-	grpcPort := getGrpcPort("GRPC_PORT", DEFAULT_GRPC_PORT)
+	// Load .env file if exists
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found or error loading .env file, proceeding with environment variables.")
+		return
+	}
+
+	// Get environment variables
+	grpcPort := helper.GetEnvOrDefault("GRPC_PORT", DEFAULT_GRPC_PORT)
+
+	// Setup graceful shutdown
+	shutdown, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
 	// Validator Initialization
 	validator, err := protovalidate.New()
 	if err != nil {
-		log.Fatalf("Failed to create validator: %v", err)
+		log.Printf("Failed to create validator: %v", err)
+		stop()
+		return
 	}
+
 	// Service Initialization
 	helloService := hello_service.NewHelloService()
 
 	// Grpc Adapter Initialization
 	grpcAdapter := grpc_adapter.NewGrpcAdapter(grpcPort, validator, helloService)
 
-	shutdown, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-	defer stop()
-
-	if err != nil {
-		stop()
-		log.Fatalf("Failed to create validator: %v", err)
-	}
-
 	go func() {
 		console.Log("Starting gRPC server on port %d...", grpcPort)
 		err := grpcAdapter.Start(shutdown)
 		if err != nil {
+			log.Printf("gRPC server stopped with error: %v", err)
 			stop()
 		}
 	}()
 
 	<-shutdown.Done()
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-	grpcAdapter.Stop(ctx)
-}
 
-func getGrpcPort(key string, defaultPort int) int {
-	portStr := os.Getenv(key)
-	portInt, err := strconv.Atoi(portStr)
-	if err != nil {
-		return defaultPort
-	}
-	return portInt
+	// Create a context with timeout for the shutdown process
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	grpcAdapter.Stop(shutdownCtx)
 }
