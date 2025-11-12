@@ -38,7 +38,7 @@ jobs:
           docker compose -f docker-compose.prod.yml up -d
 
       - name: Grpcurl test
-        run: grpcurl -plaintext localhost:9000 list
+        run: grpcurl -plaintext localhost:8000 list
 
   build:
     needs: test
