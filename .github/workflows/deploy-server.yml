@@ -14,6 +14,7 @@ env:
   IMAGE_NAME: "grpc-sample-server-prod"
   IMAGE_VERSION: "latest"
   IMAGE_NAME_TAR: "grpc-sample-server-prod.tar"
+
 jobs:
   test:
     runs-on: ubuntu-latest
